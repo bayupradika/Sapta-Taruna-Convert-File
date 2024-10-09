@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>File Converter</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/node_modules/animate.css/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        #status.hidden {
+            display: none;
+        }
+
+        #loading {
+            position: fixed;
+            z-index: 1000;
+            display: none;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(26, 26, 26, 0.358);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loader {
+            border: 16px solid #f3f3f3;
+            border-top: 16px solid #34db37;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Gaya teks warna putih */
+        body,
+        h2,
+        p,
+        h3,
+        button,
+        label {
+            color: white;
+        }
+
+        /* Gaya teks warna putih untuk tautan */
+        a {
+            color: white;
+            text-decoration: none;
+            /* Menghapus garis bawah tautan */
+        }
+
+        a:hover {
+            text-decoration: underline;
+            /* Munculkan garis bawah saat tautan dihover */
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary ">
+        <div class="container-fluid">
+            <div class="head">
+                <a class="navbar-brand" href=""><img src="../static/images/logo.png" alt="Nama Alternatif Gambar"></a>
+            </div>
+            <div class="head">
+                <a class="navbar-brand" href=""><img src="../static/images/profil-icon.png"
+                        alt="Nama Alternatif Gambar"></a>
+            </div>
+        </div>
+    </nav>
+    <section>
+        <div class="signin">
+            <div class="content">
+                <h2>Selamat Datang di halaman konversi</h2>
+                <p>Klik Tombol Dibawah ini Untuk Mulai Mengkonversi</p>
+                <p id="uploadF">File Berhasil di Upload Ke Folder Input</p>
+                <p id="uploadG">File Selesai di Konversi</p>
+                <div id="loading">
+                    <div class="loader"></div>
+                </div>
+                <div class="inputBox"
+                    style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <form id="fileUploadForm" action="/upload_files" method="post" enctype="multipart/form-data"
+                        style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;">
+                        <label for="fileInput"></label>
+                        <input type="file" id="fileInput" name="file" multiple
+                            style="color: white; background-color: #128612; margin: 0 5px;">
+                        <div id="fileDisplayWindow" style="display: none;">
+                            <h3>File yang sudah dipilih:</h3>
+                            <ul id="selectedFilesList"></ul>
+                            <button type="button" onclick="uploadFiles()"
+                                style="color: black; padding: 5px 10px; border-radius: 20%;">Upload file</button>
+                        </div>
+                    </form>
+                </div>
+                <div>
+                    <button type="button" id="convert" onclick="convertFiles()"
+                        style="color: black; padding: 5px 10px; border-radius: 20%;">Convert</button>
+                    <!-- <a href="/"><button type="button" style="color: black; padding: 5px 10px; border-radius: 20%;">Home</button></a> -->
+                    <button type="button" id="viewResultsBtn" onclick="viewResults()"
+                        style="display: none; color: black; padding: 5px 10px; border-radius: 20%;">Hasil
+                        Konversi</button>
+                    <div id="status" class="hidden"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <div class="credit">
+            <p>Created By <span><a href="bayupradika09.site">Bayu Pradika </a></span>. | &copy; 2023</p>
+        </div>
+    </footer>
+    <script src="../static/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('convert');
+        document.getElementById('uploadF').style.display = 'none';
+        document.getElementById('uploadG').style.display = 'none';
+        convert.style.display = 'none'
+
+        function uploadFiles() {
+            // Get the file input element
+            const fileInput = document.getElementById('fileInput');
+            // Get the files
+            const files = fileInput.files;
+
+            if (files.length === 0) {
+                alert('Pilih setidaknya satu file untuk diupload.');
+                return;
+            }
+
+            const formData = new FormData();
+
+            // Append each file to the FormData object
+            for (let i = 0; i < files.length; i++) {
+                formData.append('file', files[i]);
+            }
+
+            // Send the files using AJAX
+            fetch('/upload_files', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Menampilkan pesan bahwa file berhasil diunggah
+                        document.getElementById('uploadF').style.display = 'inline';
+
+                        // Menampilkan tombol convert setelah file diupload
+                        document.getElementById('convert').style.display = 'inline';
+                        document.getElementById('fileDisplayWindow').style.display = 'none';
+                        
+                    } else {
+                        alert('Gagal mengunggah file.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan. Silakan coba lagi.');
+                });
+        }
+
+
+
+        function convertFiles() {
+            document.getElementById('loading').style.display = 'flex'; // Menampilkan animasi loading
+
+            fetch('/convert_files')
+                .then(response => response.text())
+                .then(data => {
+                    // Sembunyikan animasi loading setelah permintaan selesai
+                    document.getElementById('loading').style.display = 'none';
+
+                    // Jika pesan respons adalah "File berhasil dikonversi", tampilkan tombol hasil
+                    if (data === "File berhasil dikonversi") {
+                        document.getElementById('uploadG').style.display = 'inline';
+                        document.getElementById('viewResultsBtn').style.display = 'inline';
+                    }
+                })
+                .catch(error => {
+                    // Tangani kesalahan jika ada
+                    console.error('Error:', error);
+                    // Sembunyikan animasi loading
+                    document.getElementById('loading').style.display = 'none';
+                });
+            convert.style.display = 'none'
+            document.getElementById('uploadG').style.display = 'none';
+            document.getElementById('uploadF').style.display = 'none';
+        }
+
+        function viewResults() {
+            window.open('https://console.firebase.google.com/u/0/project/convert-f4bb1/storage/convert-f4bb1.appspot.com/files');
+        }
+
+        // Fungsi untuk menampilkan file yang sudah dipilih
+        document.getElementById('fileInput').addEventListener('change', function () {
+            const selectedFilesList = document.getElementById('selectedFilesList');
+            selectedFilesList.innerHTML = ''; // Menghapus konten sebelumnya
+            fileInput.style.display = 'none';
+
+            const files = this.files;
+            for (let i = 0; i < files.length; i++) {
+                const listItem = document.createElement('li');
+                listItem.textContent = files[i].name;
+
+                // Membuat tombol untuk membatalkan file
+                const cancelButton = document.createElement('button');
+                cancelButton.textContent = 'Batal';
+                cancelButton.style.color = 'black';
+                cancelButton.style.padding = '2px';
+                cancelButton.style.alignItems = 'end';
+                cancelButton.setAttribute('type', 'button');
+
+                // Menambahkan event listener untuk membatalkan file saat tombol ditekan
+                cancelButton.addEventListener('click', function () {
+                    listItem.remove(); // Menghapus elemen list
+                });
+
+                listItem.appendChild(cancelButton); // Menambahkan tombol batal ke dalam elemen list
+                selectedFilesList.appendChild(listItem); // Menambahkan elemen list ke dalam daftar file yang dipilih
+            }
+
+            document.getElementById('fileDisplayWindow').style.display = 'block'; // Menampilkan jendela file yang dipilih
+        });
+
+    </script>
+</body>
+
+</html>
