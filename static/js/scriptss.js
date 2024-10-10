@@ -20,15 +20,15 @@ function next() {
             <ul>
                 <li>
                     <label>File Pertama</label>
-                    <button class="btn-icon" onclick="removeFile(1)"><img src="icon_x.png" alt="Remove"></button>
+                    <button class="btn-icon" onclick="removeFile(1)"><i class="fas fa-times"></i></button>
                 </li>
                 <li>
                     <label>File Kedua</label>
-                    <button class="btn-icon" onclick="removeFile(2)"><img src="icon_x.png" alt="Remove"></button>
+                    <button class="btn-icon" onclick="removeFile(2)"><i class="fas fa-times"></i></button>
                 </li>
                 <li>
                     <label>File Ketiga</label>
-                    <button class="btn-icon" onclick="removeFile(3)"><img src="icon_x.png" alt="Remove"></button>
+                    <button class="btn-icon" onclick="removeFile(3)"><i class="fas fa-times"></i></button>
                 </li>
             </ul>
             <div class="btn-group">
@@ -65,15 +65,15 @@ function convert() {
         <ul>
             <li>
                 <label>File Pertama</label>
-                <button class="btn-icon" onclick="downloadFile(1)"><img src="icon_download.png" alt="Download"></button>
+                <button class="btn-icon" onclick="downloadFile(1)"><i class="fas fa-download"></i></button>
             </li>
             <li>
                 <label>File Kedua</label>
-                <button class="btn-icon" onclick="downloadFile(2)"><img src="icon_download.png" alt="Download"></button>
+                <button class="btn-icon" onclick="downloadFile(2)"><i class="fas fa-download"></i></button>
             </li>
             <li>
                 <label>File Ketiga</label>
-                <button class="btn-icon" onclick="downloadFile(3)"><img src="icon_download.png" alt="Download"></button>
+                <button class="btn-icon" onclick="downloadFile(3)"><i class="fas fa-download"></i></button>
             </li>
         </ul>
         <div class="btn-group">
